@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+<form id="foo">
+    <label for="bar">A bar</label>
+    <input id="login" name="login" type="text" value="" />
+    <input id="password" name="password" type="text" value="" />
+    <input id="db" name="db" type="text" value=""/>
+    <input type="submit" value="Send" onclick="abc()" />
+</form>
+
+<!-- The result of the search will be rendered inside this div -->
+<div id="result"></div>
+<script type="text/javascript">
+	function abc(){
+
+        $.ajax({
+            url: '/web/login',
+            type: 'POST',
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            },
+            data: jQuery.param({ db: "test10", login : "admin", password : "odoo"}),
+            dataType: 'json',
+            contentType: "html",
+            success: function () {
+            	// alert('success');
+                // window.location.href = '/web';
+            },
+            error: function () {
+            	// alert("abc");
+               // window.location.href = '/web';
+            }
+        }); 
+	} 
+</script>
+</body>
+</html>

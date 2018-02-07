@@ -1,0 +1,235 @@
+﻿<?xml version="1.0"?> 
+<odoo>
+
+  <template id="show_sign_in" customize_show="True" inherit_id="website.layout" name="Show Sign In">
+    <xpath expr="//ul[@id='top_menu']/li[last()]" position="replace">
+        <li groups="base.group_public">
+          <a href="#" id="signer" data-toggle="modal" data-target="#SesionModal">
+              <b style="color:#69B727 !important">
+                  <img src="http://erpo.vinsoft.cl/web/image/1563" />
+                  <font style="vertical-align: inherit;">
+                      <font style="vertical-align: inherit;">ÁREA DE CLIENTES</font>
+                  </font>
+              </b>
+          </a>
+
+        </li> 
+    </xpath>
+  </template>
+
+  <template id="popup_integration" inherit_id="website.layout" name="Popup Integration">
+    <xpath expr="//div[@id='wrapwrap']" position="after">
+      <style>
+        .custom .modal-body {
+          padding: 0px 20px 20px 20px;
+        }
+        .custom .modal-title {
+          font-weight: 900;
+          font-family: 'Lato', sans-serif;
+          font-size: 18px;
+        }
+        .form-control {
+          display: block;
+          width: 100%;
+          height: 34px;
+          padding: 6px 12px;
+          font-size: 14px;
+          line-height: 1.42857143;
+          color: #555;
+          background-color: #fff;
+          background-image: none;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+          -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+          -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+          transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+          font-family: 'Lato', sans-serif;
+        }
+        .link_clave {
+          color: #999999;
+          cursor: pointer;
+          font-family: 'Lato', sans-serif;
+        }
+        .form-padding {
+            margin: 24px;
+          font-family: 'Lato', sans-serif;
+        }
+        .btn5 {
+          background-color: #d82328;
+          color: #FFF;
+          font-size: 13px;
+          font-family: 'Roboto';
+          font-weight: 900;
+          border: none;
+          padding: 0px 16px 0px 16px;
+          height: 32px;
+          margin: 0px 15px;
+          text-decoration: none;
+          -webkit-border-radius: 2px;
+          -moz-border-radius: 2px;
+          font-family: 'Lato', sans-serif;
+          float: right;
+        }
+        .clearfloat {
+          clear: both;
+          float: none;
+          width: 100%;
+          height: 1px;
+          display: block;
+        }
+        .registrate {
+            text-align: center;
+            margin: 8px 18px 8px 18px;
+            border-top: 1px solid;
+            border-color: #f2f2f2;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            cursor: pointer;
+          font-family: 'Lato', sans-serif;
+        }
+        .link_registrate {
+            color: #d82328;
+          font-family: 'Lato', sans-serif;
+        }
+      </style>
+      <div class="modal custom" id="SesionModal" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+
+              <div class="modal-body">
+
+                <form id="correo" name="correo" method="POST" action="index.php">
+
+                  <div class="form-padding">
+
+                    <div class="form-group">
+                        <button type="button" class="close" data-dismiss="modal">x</button>
+                    </div>
+
+                    <div class="form-group">
+                      <h4 class="modal-title">Iniciar Sesión</h4>
+                    </div>  
+
+                    <div class="form-group">
+                      <div> Correo Electrónico: </div>
+                     <input class="form-control" name="email" id="email" type="email" /> 
+                    </div>
+
+                    <div class="form-group">
+                      <div> Contraseña: </div>
+                      <input class="form-control" name="empresa" id="empresa" />
+                    </div>
+
+                    <a class="link_clave">¿Se te olvidó tu contraseña?</a>
+                  </div>
+
+                  <div class="botonera">
+                     <input type="button" value="INICIAR SESIÓN" class="btn5" onclick="abc()"/>
+                      <br class="clearfloat" />
+                  </div>
+
+                  <div class="row">
+                    <div  class="registrate" >
+                      ¿No tienes una cuenta? <a data-toggle="modal" data-target="#myModal" class="link_registrate" onclick="abc()">Regístrate</a>
+                    </div>
+                  </div>
+
+                </form>
+
+              </div>
+
+            </div> 
+
+          </div>
+      </div>
+
+      <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+        
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-body">
+                <form id="correo" name="correo" method="POST" action="index.php">
+                    <div class="form-padding">
+                        <div class="form-group">
+                          <button type="button" class="close" data-dismiss="modal"> Times</button>
+                        </div>
+                        <div class="form-group">
+                          <h4 class="modal-title"><b>Solicitar demostración de Vinsoft ERP</b></h4>
+                          <div>Complete la información y uno de nuestros agentes se comunicará prontamente con usted</div>
+                        </div>
+                    
+                        <div class="form-group">
+                          <div> Nombre Completo: </div>
+                          <input class="form-control" name="nombre" id="nombre" type="name" />
+                        </div>
+                        <div class="form-group">
+                          <div> Nombre de la Empresa: </div>
+                          <input class="form-control" name="empresa" id="empresa" />
+                        </div>
+                        <div class="form-group">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div>E-mail:</div>
+                              <input class="form-control" name="email" id="email" type="email" />
+                            </div>
+                            <div class="col-md-6">
+                              <div>Teléfono:</div>
+                              <input class="form-control" name="telefono" id="telefono" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="last-form-group form-group">
+                          <div>Comentarios:</div>
+                          <textarea class="form-control" rows="5" name="comentario" id="comentario"></textarea>
+                        </div>
+                    </div>
+                    <div class="botonera">
+                        <input type="button" value="SOLICITAR DEMOSTRACIÓN" class="btn1" onclick="document.getElementById('correo').submit(); return false;"/>
+                        <input type="button" value="CERRAR"  class="btn2"  data-dismiss="modal" />
+
+                    </div>
+
+                </form>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <script type="text/javascript"> 
+        function abc(){
+          var user = $("#email").val();
+          var pass = $("#empresa").val();
+          var data = '{"jsonrpc":"2.0","method":"call","params":{"login":"'+user+'","password":"'+pass+'"},"id":496808267}'
+          $.ajax({
+            url: '/web/login',
+            type: 'POST',
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            },
+            data: jQuery.param({login : user, password : pass}),
+            dataType: 'json',
+            contentType: "html",
+            success: function (response) {
+		console.log(response);
+		console.log('ddddddddddddddd');
+              //  window.location.href = '/web';
+            },
+            error: function (response) {
+		console.log(response);
+		console.log('ddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed');
+                //window.location.href = '/web';
+            }
+          });
+        } 
+      </script>
+
+    </xpath>
+  </template>
+
+</odoo>
