@@ -402,7 +402,10 @@
 
                                 </page>
 
+
                                 <page string="Kit" name="notes" attrs="{'invisible':[('kit','=',False)]}">
+                                    
+                                <button string="Product" type="object" name="product" />
 
                                     <field name="kit_id">
                                       <tree editable="bottom">

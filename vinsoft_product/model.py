@@ -142,7 +142,26 @@ class ProductTheme(models.Model):
 				'view_type': 'form',
 				'target': 'new', 
 				}
+	# return {'name': 'Product',
+	#             'views': [(False, 'list'), (False, 'form')],
+	# 			'view_mode': 'list',
+	# 			'view_type': 'list,tree,form',
+	# 			'res_model': 'product.template',
+	# 			'domain': [],
+	# 			'type': 'ir.actions.act_window',
+	# 			'target': 'new',
+	# 			}
 
+	@api.multi
+	def product(self):
+		return {'name': 'Product',
+				'domain': [],
+				'res_model': 'product.code',
+				'type': 'ir.actions.act_window',
+				'view_mode': 'form',
+				'view_type': 'form',
+				'target': 'new', 
+				}
 
 	@api.multi
 	def pending(self):
@@ -176,7 +195,7 @@ class ProductTheme(models.Model):
 			self.active = False
 
 
-	@api.onchange('taxes_tree_id','vat')
+	@api.onchange('taxes_tree_id','sale_price')
 	def _get_vai(self):
 		if self.taxes_tree_id:
 			value = 0
@@ -184,7 +203,7 @@ class ProductTheme(models.Model):
 				value = value + x.rates
 			value = value / 100
 			value = value * self.sale_price
-			self.vat = value
+			self.vat = value + self.sale_price
 
 
 	@api.onchange('name','default_code','list_price','standard_price','categ_id','weight','volume','barcode','minimun_lvl','maximum_lvl','reposition','sale_price','vat','product_cost','uom_id','groupo','kit','inventariable','sub_groupo','property_account_expense_id','property_account_income_id','property_account_creditor_price_difference','attribute_line_ids','taxes_tree_id','price_list_id','kit_id','purchase_ok','sale_ok')
@@ -283,6 +302,8 @@ class ProductTheme(models.Model):
 						'lst_price' : items.lst_price,
 						'kit_link_temp': create_record.id,
 					})
+
+				self.product_code = create_record.id
 
 
 
@@ -563,23 +584,23 @@ class ProductTemplate(models.Model):
 		self.in_hand = self.env['stock.quant'].search_count([('product_id', '=', self.id)])
 
 
-	@api.model
-	def create(self, vals):
-		new_record = super(ProductTemplate, self).create(vals)
-		if new_record.name:
-			create_reorder = self.env['stock.warehouse.orderpoint'].create({
-				'product_id': new_record.product_variant_id.id,
-				'product_min_qty':new_record.minimun_lvl,
-				'product_max_qty': new_record.maximum_lvl,
-				'company_id': 1,
-				'qty_multiple':1,
-				'product_uom': new_record.uom_id.id,
-				'name': new_record.name,
-				'warehouse_id':1,
-				'location_id':1,
-				})
+	# @api.model
+	# def create(self, vals):
+	# 	new_record = super(ProductTemplate, self).create(vals)
+	# 	if new_record.name:
+	# 		create_reorder = self.env['stock.warehouse.orderpoint'].create({
+	# 			'product_id': new_record.product_variant_id.id,
+	# 			'product_min_qty':new_record.minimun_lvl,
+	# 			'product_max_qty': new_record.maximum_lvl,
+	# 			'company_id': 1,
+	# 			'qty_multiple':1,
+	# 			'product_uom': new_record.uom_id.id,
+	# 			'name': new_record.name,
+	# 			'warehouse_id':1,
+	# 			'location_id':1,
+	# 			})
 
-		return new_record
+	# 	return new_record
 
 class EcubeCurrency(models.Model):
 	_name = 'ecube.currency'
@@ -634,6 +655,10 @@ class EcubeKitTree(models.Model):
 	kit_link  = fields.Many2one('product.code', string="Kit Id")
 	kit_link_temp  = fields.Many2one('product.template', string="Kit Id")
 
+	
+
+
+
 	@api.onchange('product')
 	def get_record(self):
 		if self.product:
@@ -684,4 +709,30 @@ class ProductWizard(models.Model):
 	@api.multi
 	def get_product(self):
 		pass
+
+
+class ProductProductextend(models.Model): 
+	_inherit = 'product.product'
+
+	@api.model
+	def create(self, vals):
+		new_record = super(ProductProductextend, self).create(vals)
+		if new_record:
+			create_reorder = self.env['stock.warehouse.orderpoint'].create({
+				'product_id': new_record.id,
+				'product_min_qty': new_record.minimun_lvl,
+				'product_max_qty':new_record.maximum_lvl,
+				})
+
+		return new_record
+
+
+	@api.multi
+	def write(self, vals):
+		super(ProductProductextend, self).write(vals)
+		for x in self.orderpoint_ids:
+			x.product_max_qty = self.minimun_lvl
+			x.product_min_qty = self.maximum_lvl
+
+		return True
 
