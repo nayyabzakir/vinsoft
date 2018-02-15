@@ -13,8 +13,8 @@ class ProductTheme(models.Model):
 	product_cost = fields.Float(string ="Product Cost")
 	curr_rate = fields.Many2one('ecube.currency',string="Currency")
 
-	groupo = fields.Many2one('groupo',string="Groupo")
-	sub_groupo = fields.Many2one('sub.groupo',string="Sub Groupo")
+	groupo = fields.Many2one('groupo',string="Grupo")
+	sub_groupo = fields.Many2one('sub.groupo',string="Sub Grupo")
 	property_account_creditor_price_difference = fields.Many2one('account.account')
 
 	barcode = fields.Char(string="Barcode")
@@ -27,6 +27,7 @@ class ProductTheme(models.Model):
 	property_account_income_id = fields.Many2one('account.account')
 	property_account_expense_id = fields.Many2one('account.account')
 	uom_id = fields.Many2one('product.uom',default=1)
+	curr_rate = fields.Many2one('ecube.currency',string="Currency")
 
 	state = fields.Selection([
 		('vigente','Vigente'),
@@ -134,23 +135,14 @@ class ProductTheme(models.Model):
 	@api.multi
 	def action_open_wizard(self):
 		self.check = True
-		return {'name': 'Product',
-				'domain': [],
-				'res_model': 'product.wizard',
-				'type': 'ir.actions.act_window',
-				'view_mode': 'form',
-				'view_type': 'form',
-				'target': 'new', 
-				}
-	# return {'name': 'Product',
-	#             'views': [(False, 'list'), (False, 'form')],
-	# 			'view_mode': 'list',
-	# 			'view_type': 'list,tree,form',
-	# 			'res_model': 'product.template',
-	# 			'domain': [],
-	# 			'type': 'ir.actions.act_window',
-	# 			'target': 'new',
-	# 			}
+		return {'name': 'Search Products',
+			'domain': [],
+			'res_model': 'product.wizard',
+			'type': 'ir.actions.act_window',
+			'view_mode': 'form',
+			'view_type': 'form',
+			'target': 'new', 
+			}
 
 	@api.multi
 	def product(self):
@@ -180,7 +172,7 @@ class ProductTheme(models.Model):
 	def get_on_hand(self):
 		self.in_hand = self.env['stock.quant'].search_count([('product_id', '=', self.product_code.id)])
 
-# No need of this onchange
+	# No need of this onchange
 	@api.onchange('curr_rate','pre_price')
 	def _change_sale_price(self):
 		if self.pre_price > 0:
@@ -195,18 +187,18 @@ class ProductTheme(models.Model):
 			self.active = False
 
 
-	@api.onchange('taxes_tree_id','sale_price')
+	@api.onchange('taxes_tree_id','list_price')
 	def _get_vai(self):
 		if self.taxes_tree_id:
 			value = 0
 			for x in self.taxes_tree_id:
 				value = value + x.rates
 			value = value / 100
-			value = value * self.sale_price
-			self.vat = value + self.sale_price
+			value = value * self.list_price
+			self.vat = value + self.list_price
 
 
-	@api.onchange('name','default_code','list_price','standard_price','categ_id','weight','volume','barcode','minimun_lvl','maximum_lvl','reposition','sale_price','vat','product_cost','uom_id','groupo','kit','inventariable','sub_groupo','property_account_expense_id','property_account_income_id','property_account_creditor_price_difference','attribute_line_ids','taxes_tree_id','price_list_id','kit_id','purchase_ok','sale_ok')
+	@api.onchange('name','default_code','list_price','standard_price','categ_id','weight','volume','barcode','minimun_lvl','maximum_lvl','reposition','list_price','vat','product_cost','uom_id','groupo','kit','inventariable','sub_groupo','property_account_expense_id','property_account_income_id','property_account_creditor_price_difference','attribute_line_ids','taxes_tree_id','price_list_id','kit_id','purchase_ok','sale_ok')
 	def _get_check(self):
 		if self.product_code:
 			self.check = False
@@ -221,6 +213,7 @@ class ProductTheme(models.Model):
 		new_record = super(ProductTheme, self).create(vals)
 		new_record.save()
 		new_record.modify()
+
 		# new_record.cancel()
 
 		return new_record
@@ -231,7 +224,7 @@ class ProductTheme(models.Model):
 		res = super(ProductTheme, self).write(vals)
 		# if boolean == 0:
 		if self.check == False:
-			self.save()
+			# self.save()
 			self.modify()
 			# if not self.product_code:
 			# 	self.cancel()
@@ -248,6 +241,8 @@ class ProductTheme(models.Model):
 						'name': self.name,
 						'default_code': self.default_code,
 						'list_price': self.list_price,
+						'pre_price': self.pre_price,
+						'curr_rate': self.curr_rate.id,
 						'standard_price': self.standard_price,
 						'categ_id': self.categ_id.id,
 						'weight': self.weight,
@@ -261,38 +256,40 @@ class ProductTheme(models.Model):
 						'maximum_lvl': self.maximum_lvl,
 						'reposition': self.reposition,
 						'description': self.name,
-						'sale_price': self.sale_price,
 						'vat': self.vat,
-						'product_cost': self.product_cost,
 						'uom_id': self.uom_id.id,
 						'groupo': self.groupo.id,
 						'sub_groupo': self.sub_groupo.id,
+						'price_list_id': self.price_list_id,
+						'taxes_tree_id': self.taxes_tree_id,
+						'kit_id': self.kit_id,
 						'property_account_expense_id': self.property_account_expense_id.id,
 						'property_account_income_id': self.property_account_income_id.id,
 						'property_account_creditor_price_difference': self.property_account_creditor_price_difference.id,
 					})
 
-				for items in self.taxes_tree_id:
-					tree_rec = create_record.taxes_tree_id.create({
-						'desc' : items.desc.id,
-						'rates' : items.rates,
-						'taxes_tree_temp': create_record.id,
-					})
+				# for items in self.taxes_tree_id:
+				# 	tree_rec = create_record.taxes_tree_id.create({
+				# 		'desc' : items.desc.id,
+				# 		'rates' : items.rates,
+				# 		'taxes_tree_temp': create_record.id,
+				# 	})
 
 				for items in self.price_list_id:
-					price_rec = create_record.price_list_id.create({
-						'name' : items.name,
-						'min_quantity' : items.min_quantity,
-						'date_start' : items.date_start,
-						'date_end' : items.date_end,
-						'pricelist_id' : items.pricelist_id.id,
-						'applied_on' : items.applied_on,
-						'compute_price' : items.compute_price,
-						'product_tmpl_id' : items.product_tmpl_id.id,
-						'fixed_price' : items.fixed_price,
-						'price' : items.price,
-						'price_link_temp': create_record.id,
-					})
+					items.product_id = create_record.id
+					# price_rec = create_record.price_list_id.create({
+						# 'name' : items.name,
+						# 'min_quantity' : items.min_quantity,
+						# 'date_start' : items.date_start,
+						# 'date_end' : items.date_end,
+						# 'pricelist_id' : items.pricelist_id.id,
+						# 'applied_on' : items.applied_on,
+						# 'compute_price' : items.compute_price,
+						# 'product_tmpl_id' : items.product_tmpl_id.id,
+						# 'fixed_price' : items.fixed_price,
+						# 'price' : items.price,
+						# 'price_link_temp' = self.id,
+					# })
 
 				for items in self.kit_id:
 					kit_rec = create_record.kit_id.create({
@@ -305,6 +302,45 @@ class ProductTheme(models.Model):
 
 				self.product_code = create_record.id
 
+	@api.multi
+	def modify(self):
+		if self.product_code:
+			self.product_code.name = self.name 
+			self.product_code.default_code = self.default_code
+			self.product_code.list_price = self.list_price
+			self.product_code.standard_price = self.standard_price
+			self.product_code.categ_id = self.categ_id.id
+			self.product_code.weight = self.weight
+			self.product_code.volume = self.volume
+			self.product_code.barcode = self.barcode
+			self.product_code.pre_price = self.pre_price
+			self.product_code.curr_rate = self.curr_rate.id
+			self.product_code.minimun_lvl = self.minimun_lvl
+			self.product_code.maximum_lvl = self.maximum_lvl 
+			self.product_code.reposition = self.reposition
+			self.product_code.description = self.name
+			self.product_code.vat = self.vat
+			self.product_code.uom_id = self.uom_id.id
+			self.product_code.groupo = self.groupo.id
+			self.product_code.kit = self.kit
+			self.product_code.inventariable = self.inventariable
+			self.product_code.sub_groupo= self.sub_groupo.id
+			self.product_code.property_account_expense_id = self.property_account_expense_id.id
+			self.product_code.property_account_income_id = self.property_account_income_id.id
+			self.product_code.property_account_creditor_price_difference = self.property_account_creditor_price_difference
+			self.product_code.attribute_line_ids = self.attribute_line_ids
+			self.product_code.taxes_tree_id = self.taxes_tree_id
+			self.product_code.price_list_id = self.price_list_id
+			self.product_code.kit_id = self.kit_id
+			self.product_code.purchase_ok = self.purchase_ok
+			self.product_code.sale_ok = self.sale_ok
+
+			for items in self.price_list_id:
+				items.product_id = self.product_code.id
+
+			# for items in self.price_list_id:
+			# 	items.price_link_temp = items.id
+			# 	items.product_id = self.product_code.id
 
 
 	@api.onchange('product_code')
@@ -322,18 +358,18 @@ class ProductTheme(models.Model):
 			self.barcode = self.product_code.barcode
 			self.default_code = self.product_code.default_code
 			self.list_price = self.product_code.list_price
-			self.standard_price = self.product_code.standard_price
 			self.categ_id = self.product_code.categ_id.id
 			self.weight = self.product_code.weight
+			self.pre_price = self.product_code.pre_price
+			self.curr_rate = self.product_code.curr_rate.id
 			self.volume = self.product_code.volume
 			self.kit = self.product_code.kit
 			self.minimun_lvl =self.product_code.minimun_lvl
 			self.maximum_lvl = self.product_code.maximum_lvl
 			self.reposition = self.product_code.reposition
 			self.description = self.product_code.name
-			self.sale_price = self.product_code.sale_price
 			self.vat = self.product_code.vat
-			self.product_cost = self.product_code.product_cost
+			self.standard_price = self.product_code.standard_price
 			self.uom_id = self.product_code.uom_id.id
 			self.groupo = self.product_code.groupo.id
 			self.sub_groupo = self.product_code.sub_groupo.id
@@ -341,30 +377,33 @@ class ProductTheme(models.Model):
 			self.property_account_income_id = self.product_code.property_account_income_id.id
 			self.property_account_creditor_price_difference = self.product_code.property_account_creditor_price_difference.id
 			for items in self.product_code.taxes_tree_id:
-				self.taxes_tree_id |= self.taxes_tree_id.new({
-					'desc' : items.desc,
-					'rates' : items.rates
-					})
+				items.taxes_tree = self.id
+				# self.taxes_tree_id |= self.taxes_tree_id.new({
+				# 	'desc' : items.desc,
+				# 	'rates' : items.rates
+				# 	})
 			for items in self.product_code.price_list_id:
-				self.price_list_id |= self.price_list_id.new({
-					'name' : items.name,
-					'min_quantity' : items.min_quantity,
-					'date_start' : items.date_start,
-					'date_end' : items.date_end,
-					'pricelist_id' : items.pricelist_id,
-					'applied_on' : items.applied_on,
-					'compute_price' : items.compute_price,
-					'product_tmpl_id' : items.product_tmpl_id,
-					'fixed_price' : items.fixed_price,
-					'price' : items.price
-					})
+				items.price_link = self.id
+				# self.price_list_id |= self.price_list_id.new({
+				# 	'name' : items.name,
+				# 	'min_quantity' : items.min_quantity,
+				# 	'date_start' : items.date_start,
+				# 	'date_end' : items.date_end,
+				# 	'pricelist_id' : items.pricelist_id,
+				# 	'applied_on' : items.applied_on,
+				# 	'compute_price' : items.compute_price,
+				# 	'product_tmpl_id' : items.product_tmpl_id,
+				# 	'fixed_price' : items.fixed_price,
+				# 	'price' : items.price
+				# 	})
 			for items in self.product_code.kit_id:
-				self.kit_id |= self.kit_id.new({
-					'product' : items.product,
-					'code' : items.code,
-					'qty' : items.qty,
-					'lst_price' : items.lst_price
-					})
+				items.kit_link = self.id
+			# 	self.kit_id |= self.kit_id.new({
+			# 		'product' : items.product,
+			# 		'code' : items.code,
+			# 		'qty' : items.qty,
+			# 		'lst_price' : items.lst_price
+			# 		})
 
 	@api.multi
 	def elimniate(self):
@@ -372,38 +411,7 @@ class ProductTheme(models.Model):
 			self.product_code.unlink()
 			self.cancel()
 
-	@api.multi
-	def modify(self):
-		if self.product_code:
-			self.product_code.name = self.name 
-			self.product_code.default_code = self.default_code
-			self.product_code.list_price = self.list_price
-			self.product_code.standard_price = self.standard_price
-			self.product_code.categ_id = self.categ_id.id
-			self.product_code.weight = self.weight
-			self.product_code.volume = self.volume
-			self.product_code.barcode = self.barcode
-			self.product_code.minimun_lvl = self.minimun_lvl
-			self.product_code.maximum_lvl = self.maximum_lvl 
-			self.product_code.reposition = self.reposition
-			self.product_code.description = self.name
-			self.product_code.sale_price = self.sale_price
-			self.product_code.vat = self.vat
-			self.product_code.product_cost = self.product_cost
-			self.product_code.uom_id = self.uom_id.id
-			self.product_code.groupo = self.groupo.id
-			self.product_code.kit = self.kit
-			self.product_code.inventariable = self.inventariable
-			self.product_code.sub_groupo= self.sub_groupo.id
-			self.product_code.property_account_expense_id = self.property_account_expense_id.id
-			self.product_code.property_account_income_id = self.property_account_income_id.id
-			self.product_code.property_account_creditor_price_difference = self.property_account_creditor_price_difference
-			self.product_code.attribute_line_ids = self.attribute_line_ids
-			self.product_code.taxes_tree_id = self.taxes_tree_id
-			self.product_code.price_list_id = self.price_list_id
-			self.product_code.kit_id = self.kit_id
-			self.product_code.purchase_ok = self.purchase_ok
-			self.product_code.sale_ok = self.sale_ok
+
 
 
 
@@ -419,7 +427,6 @@ class ProductTheme(models.Model):
 			self.barcode = False
 			self.default_code = False
 			self.list_price = False
-			self.standard_price = False
 			self.weight = False
 			self.volume = False
 			self.name = False
@@ -429,9 +436,8 @@ class ProductTheme(models.Model):
 			self.property_account_creditor_price_difference = False
 			self.property_account_income_id = False
 			self.property_account_expense_id = False
-			self.sale_price = False
 			self.vat = False
-			self.product_cost = False
+			self.standard_price = False
 			self.groupo = False
 			self.sub_groupo = False
 			self.kit = False
@@ -439,9 +445,9 @@ class ProductTheme(models.Model):
 			self.product_code = False
 			self.sale_ok = False
 			self.purchase_ok = False
+			self.pre_price = False
+			self.curr_rate = False
 		# boolean = 0
-
-
 
 class ProductTemplate(models.Model): 
 	_inherit = 'product.template'
@@ -524,7 +530,12 @@ class ProductTemplate(models.Model):
 	in_hand = fields.Integer(string="On Hand", compute='get_on_hand')
 	in_stock = fields.Integer(string="In Stock", compute='get_in_stock')
 	in_sale = fields.Integer(string="In Sale", compute='get_in_sale')
+	curr_rate = fields.Many2one('ecube.currency',string="Currency")
 
+	@api.onchange('curr_rate','pre_price')
+	def _change_pre_price(self):
+		if self.pre_price > 0:
+			self.list_price = self.pre_price * self.curr_rate.rate
 
 	@api.multi
 	def stock_button(self):
@@ -636,7 +647,7 @@ class PriceListExtend(models.Model):
 	_inherit = 'product.pricelist.item'
 
 	price_link  = fields.Many2one('product.code', string="Product Id")
-	price_link_temp  = fields.Many2one('product.template', string="Product Id")
+	price_link_temp = fields.Many2one('product.template', string="Product Id")
 	applied_on = fields.Selection([
 		('3_global', 'Global'),
 		('2_product_category', ' Product Category'),
@@ -695,7 +706,8 @@ class MRPBomLine(models.Model):
 class ProductWizard(models.Model): 
 	_name = 'product.wizard'
 
-	products = fields.Many2one('product.template',string="Products")
+	products = fields.Many2one('product.template',string="Search Products")
+
 
 	@api.model
 	def create(self, vals):
@@ -713,6 +725,13 @@ class ProductWizard(models.Model):
 
 class ProductProductextend(models.Model): 
 	_inherit = 'product.product'
+	applied_on = fields.Selection([
+        ('3_global', 'Global'),
+        ('2_product_category', ' Product Category'),
+        ('1_product', 'Product'),
+        ('0_product_variant', 'Product Variant')], "Apply On",
+        default='3_global', required=True,
+        help='Pricelist Item applicable on selected option')
 
 	@api.model
 	def create(self, vals):
@@ -735,4 +754,26 @@ class ProductProductextend(models.Model):
 			x.product_min_qty = self.maximum_lvl
 
 		return True
+
+class ProductPricelistItem(models.Model): 
+	_inherit = 'product.pricelist.item'
+	applied_on = fields.Selection([
+        ('3_global', 'Global'),
+        ('2_product_category', ' Product Category'),
+        ('1_product', 'Product'),
+        ('0_product_variant', 'Product Variant')], "Apply On",
+        default='0_product_variant', required=True,
+        help='Pricelist Item applicable on selected option')
+
+	base = fields.Selection([
+        ('list_price', 'Public Price'),
+        ('standard_price', 'Cost'),
+        ('pricelist', 'Other Pricelist')], "Based on",
+        default='pricelist', required=True,
+        help='Base price for computation.\n'
+             'Public Price: The base price will be the Sale/public Price.\n'
+             'Cost Price : The base price will be the cost price.\n'
+             'Other Pricelist : Computation of the base price based on another Pricelist.')
+
+
 

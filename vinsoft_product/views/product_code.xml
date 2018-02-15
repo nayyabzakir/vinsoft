@@ -17,7 +17,6 @@
                 <div class="product_theme">
 
                     <header>
-                        <!-- <button string="Variant Prices" type="action" name="163" attrs="{'invisible': [('product_variant_count', '&lt;=', 1)]}" groups="product.group_product_variant"/> -->
                     </header>
 
                     <sheet>
@@ -27,10 +26,6 @@
                             <field name="id" invisible="True"/>
                         </div>
 
-                       <!--  <div class="title_field">
-                            <field name="name" class="special" />
-                        </div>
- -->
                         <div id="prod_image">
                             <field name="image_medium" widget="image" class="oe_avatar"/>
                         </div>
@@ -139,7 +134,7 @@
                                                     <div class="lower_many">
                                                         <label for="action_open_code" string="Disponible en Bodega"/>
                                                         <div class="field-wrapper">
-                                                            <button name="action_open_code" type="object" string="Disponible en Bodega" icon="fa-archive">
+                                                            <button name="action_open_code" type="object" icon="fa-search">
                                                             <field name="in_hand" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                                                             </button>
                                                         </div>
@@ -149,7 +144,7 @@
                                                     <div class="lower_many">
                                                         <label for="stock_button" string="Compromisos por Llegar"/>
                                                         <div class="field-wrapper">
-                                                            <button name="stock_button" type="object" string="Compromisos por Llegar" icon="fa-archive">
+                                                            <button name="stock_button" type="object" icon="fa-search">
                                                             <field name="in_stock" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                                                             </button>
                                                         </div>
@@ -159,7 +154,7 @@
                                                     <div class="lower_many">
                                                         <label for="sale_order" string="Notas de Venta por Facturar"/>
                                                         <div class="field-wrapper">
-                                                            <button name="sale_order" type="object" string="Notas de Venta por Facturar" icon="fa-archive">
+                                                            <button name="sale_order" type="object" icon="fa-search">
                                                             <field name="in_sale" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                                                             </button>
                                                         </div> 
@@ -168,8 +163,8 @@
 
                                                     <div class="lower_many">
                                                         <label for="pending" string="Guias de Despacho por Facturar"/>
-                                                        <div class="field-wrapper">
-                                                            <button name="pending" type="object" string="Guias de Despacho por Facturar"/>
+                                                        <div class="field-wrapper lasted_beton">
+                                                            <button name="pending" type="object" icon="fa-search"/>
                                                         </div> 
                                                         <br class="clearfloat" />
                                                     </div>
@@ -250,19 +245,19 @@
 
                                         <group name="group_general">
 
-                                            <div class="tab-group" style="margin: 0px 15px 0px 0px;">
+                                            <div class="tab-group" style="margin: 0px 15px 0px 0px; padding-bottom: 10px;">
                                                 <h1>Valores de Venta</h1>
 
                                                 <div class="floating_fields">
 
                                                     <div class="floating-field marginized">
 
-                                                        <label for="sale_price" string="Precio Venta"/>
-                                                        <field name="sale_price" nolabel="1" widget="currency"></field>
+                                                        <label for="list_price" string="Precio Venta"/>
+                                                        <field name="list_price" nolabel="1" widget="currency"></field>
 
                                                     </div>
 
-                                                    <div class="floating-field">
+                                                    <div class="floating-field marginized">
 
                                                         <label for="vat" string="Valor con IVA"/>
                                                         <field name="vat" nolabel="1" widget="currency"></field>
@@ -276,15 +271,27 @@
 
                                         <group name="group_standard_price">
 
-                                            <div class="tab-group">
+                                            <div class="tab-group" style="padding-bottom: 10px;">
                                                 <h1>Costo</h1>
 
                                                 <div class="floating_fields">
 
                                                     <div class="floating-field marginized">
 
-                                                        <label for="product_cost" string="Costo Producto"/>
-                                                        <field name="product_cost" nolabel="1" widget="currency"/>
+                                                        <label for="standard_price" string="Costo Producto"/>
+                                                        <field name="standard_price" nolabel="1" widget="currency"/>
+                                                    </div>
+
+                                                    <div class="floating-field">
+
+                                                        <label for="pre_price" string="Pre Price"/>
+                                                        <field name="pre_price" nolabel="1"/>
+                                                    </div>
+
+                                                    <div class="floating-field marginized">
+
+                                                        <label for="curr_rate" string="Currency Rate"/>
+                                                        <field name="curr_rate" nolabel="1"/>
                                                     </div>
 
                                                 </div>
@@ -387,16 +394,18 @@
 
                                     <field name="price_list_id">
                                       <tree editable="bottom">
-                                        <field name="name" string="Applicable On"/>
-                                        <field name="min_quantity"/>
-                                        <field name="date_start"/>
-                                        <field name="date_end"/>
-                                        <field name="pricelist_id"/>
-                                        <field name="applied_on"/>
+                                        <!-- <field name="name" string="Applicable On" invisible = "1"/> -->
+                                        <field name="min_quantity" invisible = "1"/>
+                                        <field name="date_start" invisible = "1"/>
+                                        <field name="date_end" invisible = "1"/>
+                                        <field name="pricelist_id" required = "1"/>
+                                        <field name="applied_on" invisible = "1"/>
                                         <field name="compute_price"/>
-                                        <field name="product_tmpl_id"/>
-                                        <field name="fixed_price"/>
-                                        <field name="price" string="Price"/>
+                                        <field name="product_id" invisible = "1"/>
+                                        <field name="fixed_price" attrs="{'readonly': [('compute_price','!=','fixed')]}"/>
+                                        <field name="base_pricelist_id" attrs="{'readonly': [('compute_price','!=','formula')]}"/>
+                                        <field name="base" attrs="{'readonly': [('compute_price','!=','formula')]}" invisible = "1"/>
+                                        <field name="price_discount" attrs="{'readonly': [('compute_price','!=','formula')]}"/> 
                                       </tree>
                                     </field>
 
@@ -405,11 +414,11 @@
 
                                 <page string="Kit" name="notes" attrs="{'invisible':[('kit','=',False)]}">
                                     
-                                <button string="Product" type="object" name="product" />
+                                    <button string="Agregar Nuevo" type="object" name="product" class="kit_button" />
 
                                     <field name="kit_id">
                                       <tree editable="bottom">
-                                        <field name="product"/>
+                                        <field name="product" options="{'no_create_edit': True}" required="1"/>
                                         <field name="code"/>
                                         <field name="qty"/>
                                         <field name="lst_price"/>
@@ -425,11 +434,11 @@
                     </sheet>
 
                      <footer>
-                        <div class="tab-buttons">
+                        <div class="tab-buttons"><!-- 
 
                             <button  class="btn btn-success btn-green btn-white-content" name="save" type="object" string="Guardar"/>
 
-                            <button class="btn btn-warning btn-orange btn-white-content" name="modify" type="object" string="Modificar"/>
+                            <button class="btn btn-warning btn-orange btn-white-content" name="modify" type="object" string="Modificar"/> -->
 
                             <button class="btn btn-danger btn-red btn-white-content" name="elimniate" type="object" string="Eliminar"/>
 
@@ -445,8 +454,6 @@
 
         </field>
     </record>
-
-
 
     <record id="code_product_tree_view" model="ir.ui.view"> 
         <field name="name">code_product_tree_view</field> 
@@ -464,35 +471,13 @@
             </tree>
         </field>
     </record>
-
-<!--     <record id="product_form_extension_tree_code_ecube" model="ir.ui.view"> 
-        <field name="name">product_form_extension_tree_code_ecube</field> 
-        <field name="model">product.code</field>
-        <field name="arch" type="xml">
-
-            <tree editable="bottom" string="Product">
-                <field name="default_code"/>
-                <field name="name"/>
-                <field name="list_price"/>
-                <field name="standard_price"/>
-                <field name="categ_id"/>
-                <field name="type"/>
-                <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="product.group_uom"/>
-            </tree>
-
-
-
-        </field>
-    </record> -->
     
     <record model="ir.actions.act_window" id="product_code_action">
-        <field name="name">Product Development</field>
+        <field name="name">Ficha de Producto</field>
         <field name="res_model">product.code</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-
 
     <menuitem name="Product 2" id="code_product" parent="sales_team.menu_sales" action="product_code_action" sequence="10"/>
 

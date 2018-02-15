@@ -21,16 +21,6 @@ a.o_form_uri:before {
 .product_theme {
 
 }
-.custom_butt .btn {
-    padding: 15px 23px;
-    margin: -9px -13px 0px 0px;
-    line-height: 1;
-    outline: none;
-}
-.custom_butt i {
-	right: 4px !important;
-	top: 2px !important;
-}
 .product_theme input,
 .product_theme span.o_form_field,
 .product_theme a.o_form_field,
@@ -101,7 +91,7 @@ a.o_form_uri:before {
 	overflow: hidden;
 }
 .image_fields {
-    width: 820px;
+    width: 810px;
     float: left;
     padding: 0px 0px 0px 10px;
 }
@@ -153,7 +143,7 @@ a.o_form_uri:before {
 	width: 100% !important;
 }
 .descrip.lower_many .field-wrapper {
-    width: 810px !important;
+    width: 100% !important;
 }
 .descrip .o_form_textarea {
 	resize: none;
@@ -318,7 +308,7 @@ a.o_form_uri.o_form_field:before {
 }
 .seprator-border {
 	width: 485px;
-	margin: 15px auto 0px;
+	margin: 42px auto 0px;
 	height: 1px;
 	background: #ccc;
 }
@@ -454,11 +444,11 @@ a.o_form_uri.o_form_field:before {
 }
 .btn {
     display: inline-block;
-    padding: 6px 12px;
-    margin-bottom: 0;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.42857143;
+	padding: 8px 12px;
+	margin-bottom: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1;
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
@@ -530,12 +520,31 @@ a.o_form_uri.o_form_field:before {
 	margin: 25px 0px 0px;
 }
 .one_specials .field-wrapper button {
-	background: none !important;
-	outline: none;
-	color: #7c7bad !important;
+    background: none !important;
+    outline: none !important;
+    color: #7c7bad !important;
+    box-shadow: none !important;
+    border: 1px solid #CCC;
+    position: relative;
+    min-height: 32px;
 }
-.one_specials .field-wrapper button div {
-	display: none;
+.one_specials .field-wrapper button .o_form_field {
+	padding: 0px;
+	min-height: unset;
+	max-height: unset;
+	margin: 0px !important;
+	line-height: 1;
+}
+.one_specials .field-wrapper button .fa-fw {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	height: 30px;
+	width: 40px;
+	text-align: center;
+	padding: 7px 10px;
+	background: #CCC;
+	color: #333;
 }
 .one_specials .field-wrapper button span {
 	float: left;
@@ -543,7 +552,6 @@ a.o_form_uri.o_form_field:before {
 .one_specials .field-wrapper button span:last-child {
 	border: none;
 	margin: -9px 0px 0px 12px;
-	border-left: 1px solid #ccc;
 	border-radius: 0;
 }
 .one_specials .field-wrapper {
@@ -551,4 +559,50 @@ a.o_form_uri.o_form_field:before {
     float: right;
     position: relative;
     text-align: right;
-   }
+}
+.custom_butt .btn {
+    padding: 15.5px 23px;
+    margin: -10px -12px 0px 0px;
+    line-height: 1;
+    outline: none;
+    border-radius: 0px 3px 3px 0px;
+}
+.custom_butt .btn i {
+	right: 4px !important;
+	top: 0px !important;
+}
+.one_specials .field-wrapper.lasted_beton button span {
+	border: none;
+}
+.kit_button {
+	margin-top: 10px;
+	background-color: #32c6d2;
+	color: white;
+	margin-bottom: 10px;
+}
+.modal .modal-dialog .o_form_view .o_form_sheet {
+    min-height: 100px;
+}
+
+@media (min-width: 768px) {
+	.modal .modal-dialog {
+		width: 650px !important;
+	}
+}
+@media (min-width: 992px) {
+	.modal-lg {
+		width: 650px !important;
+	}
+}
+@media (min-width: 768px) {
+	.modal-dialog {
+		width: 650px !important;
+	}
+}
+.modal-dialog {
+	width: 650px !important;
+}
+.modal footer {
+     border-top: none !important; 
+    height: 30px !important;
+}

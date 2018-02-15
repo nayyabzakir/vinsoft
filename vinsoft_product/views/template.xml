@@ -132,7 +132,7 @@
                                                     <div class="lower_many">
                                                         <label for="action_open_code" string="Disponible en Bodega"/>
                                                         <div class="field-wrapper">
-                                                            <button name="action_open_code" type="object" string="Disponible en Bodega" icon="fa-archive">
+                                                            <button name="action_open_code" type="object" icon="fa-search">
                                                             <field name="in_hand" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                                                             </button>
                                                         </div>
@@ -142,7 +142,7 @@
                                                     <div class="lower_many">
                                                         <label for="stock_button" string="Compromisos por Llegar"/>
                                                         <div class="field-wrapper">
-                                                            <button name="stock_button" type="object" string="Compromisos por Llegar" icon="fa-archive">
+                                                            <button name="stock_button" type="object" icon="fa-search">
                                                             <field name="in_stock" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                                                             </button>
                                                         </div>
@@ -152,7 +152,7 @@
                                                     <div class="lower_many">
                                                         <label for="sale_order" string="Notas de Venta por Facturar"/>
                                                         <div class="field-wrapper">
-                                                            <button name="sale_order" type="object" string="Notas de Venta por Facturar" icon="fa-archive">
+                                                            <button name="sale_order" type="object" icon="fa-search">
                                                             <field name="in_sale" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                                                             </button>
                                                         </div> 
@@ -161,8 +161,8 @@
 
                                                     <div class="lower_many">
                                                         <label for="pending" string="Guias de Despacho por Facturar"/>
-                                                        <div class="field-wrapper">
-                                                            <button name="pending" type="object" string="Guias de Despacho por Facturar"/>
+                                                        <div class="field-wrapper lasted_beton">
+                                                            <button name="pending" type="object" icon="fa-search"/>
                                                         </div> 
                                                         <br class="clearfloat" />
                                                     </div>
@@ -250,12 +250,12 @@
 
                                                     <div class="floating-field marginized">
 
-                                                        <label for="sale_price" string="Precio Venta"/>
-                                                        <field name="sale_price" nolabel="1" widget="currency"></field>
+                                                        <label for="list_price" string="Precio Venta"/>
+                                                        <field name="list_price" nolabel="1" widget="currency"></field>
 
                                                     </div>
 
-                                                    <div class="floating-field">
+                                                    <div class="floating-field marginized">
 
                                                         <label for="vat" string="Valor con IVA"/>
                                                         <field name="vat" nolabel="1" widget="currency"></field>
@@ -276,8 +276,20 @@
 
                                                     <div class="floating-field marginized">
 
-                                                        <label for="product_cost" string="Costo Producto"/>
-                                                        <field name="product_cost" nolabel="1" widget="currency"/>
+                                                        <label for="standard_price" string="Costo Producto"/>
+                                                        <field name="standard_price" nolabel="1" widget="currency"/>
+                                                    </div>
+
+                                                    <div class="floating-field">
+
+                                                        <label for="pre_price" string="Pre Price"/>
+                                                        <field name="pre_price" nolabel="1"/>
+                                                    </div>
+
+                                                    <div class="floating-field marginized">
+
+                                                        <label for="curr_rate" string="Currency Rate"/>
+                                                        <field name="curr_rate" nolabel="1"/>
                                                     </div>
 
                                                 </div>
@@ -380,18 +392,20 @@
 
                                     <field name="price_list_id">
                                       <tree editable="bottom">
-                                        <field name="name" string="Applicable On"/>
-                                        <field name="min_quantity"/>
-                                        <field name="date_start"/>
-                                        <field name="date_end"/>
+                                        <!-- <field name="name" string="Applicable On" invisible = "1"/> -->
+                                        <field name="min_quantity" invisible = "1"/>
+                                        <field name="date_start" invisible = "1"/>
+                                        <field name="date_end" invisible = "1"/>
                                         <field name="pricelist_id"/>
-                                        <field name="applied_on"/>
+                                        <field name="applied_on" invisible = "1"/>
                                         <field name="compute_price"/>
-                                        <field name="product_tmpl_id"/>
-                                        <field name="fixed_price"/>
-                                        <field name="price" string="Price"/>
+                                        <field name="product_id"/>
+                                        <field name="fixed_price" attrs="{'readonly': [('compute_price','!=','fixed')]}"/>
+                                        <field name="base" attrs="{'readonly': [('compute_price','!=','formula')]}"/>
+                                        <field name="price_discount" attrs="{'readonly': [('compute_price','!=','formula')]}"/> 
                                       </tree>
                                     </field>
+
 
                                 </page>
 

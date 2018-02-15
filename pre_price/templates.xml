@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+
+<record id="pre_price_view" model="ir.ui.view"> 
+        <field name="name">pre_price_view</field> 
+        <field name="model">product.template</field> 
+        <field name="inherit_id" ref="product.product_template_only_form_view"/> 
+        <field name="arch" type="xml"> 
+
+           <xpath expr="//field[@name='list_price']" position="after">
+
+                    <field name="pre_price"/>
+                    <field name="curr_rate"/>
+
+            </xpath>
+
+        </field> 
+    </record>
+
+
+<record id="ecube_currency_view" model="ir.ui.view"> 
+    <field name="name">ecube_currency_view</field> 
+    <field name="model">ecube.currency</field> 
+    <field name="arch" type="xml"> 
+        <form>
+            <sheet>
+                <group>
+                    <group name="right">
+                        <field name="name"/>
+                    </group>
+                    <group name="left">
+                        <field name="rate"/>
+                    </group>
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+<record id="view_tree_ecube_currency" model="ir.ui.view"> 
+    <field name="name">Ecube Tree Currency</field> 
+    <field name="model">ecube.currency</field> 
+    <field name="type">tree</field> 
+    <field name="arch" type="xml"> 
+        <tree> 
+                 
+            <field name="name"/>
+            <field name="rate"/>
+     
+        </tree> 
+    </field> 
+            
+</record>
+
+<record model="ir.actions.act_window" id="ecube_currency_action">
+    <field name="name">Currency</field>
+    <field name="res_model">ecube.currency</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem name="Currency" id="ecube_currency" parent="sales_team.menu_sale_config" action="ecube_currency_action" sequence="1"/>
+
+
+
+</odoo>
